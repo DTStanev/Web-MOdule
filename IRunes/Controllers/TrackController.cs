@@ -45,7 +45,7 @@ namespace IRunes.Controllers
             var track = new Track
             {
                 Name = trackName,
-                Link = trackLink,
+                Link = trackLink.Replace("watch?v=", "embed/"),
                 Price = trackPrice,
             };
 
@@ -75,6 +75,33 @@ namespace IRunes.Controllers
             this.ViewBag["@albumId"] = albumId;
 
             return this.View("Track/Create");
+        }
+
+        public  IHttpResponse Details(IHttpRequest request)
+        {
+            var username = this.GetUsername(request);
+
+            if (username == null)
+            {
+                return new RedirectResult("/");
+            }
+
+            var albumId = request.QueryData["albumId"].ToString().UrlDecode();
+            var trackId = request.QueryData["trackId"].ToString().UrlDecode();
+
+            var track = this.Context.Tracks.FirstOrDefault(t => t.Id == trackId);
+
+            if (track == null)
+            {
+                return new RedirectResult("/albums/all");
+            }
+
+            this.ViewBag["@trackName"] = track.Name;
+            this.ViewBag["@trackPrice"] = track.Price.ToString("F2");
+            this.ViewBag["@videoUrl"] = track.Link;
+            this.ViewBag["@albumId"] = albumId;
+
+            return this.View("Track/Details");
         }
     }
 }

@@ -27,6 +27,8 @@ namespace IRunes
             serverRoutingTable.Routes[HttpRequestMethod.Get]["/tracks/create"] = request => new TrackController().Create(request);
             serverRoutingTable.Routes[HttpRequestMethod.Post]["/tracks/create"] = request => new TrackController().DoCreate(request);
 
+            serverRoutingTable.Routes[HttpRequestMethod.Get]["/tracks/details"] = request => new TrackController().Details(request);
+
 
             Server server = new Server(1337, serverRoutingTable);
 

@@ -21,15 +21,19 @@ namespace IRunes.Controllers
         {
             this.hashService = new HashSerice();
         }
-        
+
         public IHttpResponse Login(IHttpRequest request)
         {
             var username = this.GetUsername(request);
+
             if (username != null)
             {
                 this.ViewBag["@@username"] = username;
-                return this.View("Index");
+                return this.View("Home/Index");
             }
+
+            this.ViewBag["@showError"] = "none";
+
             return this.View("User/Login");
         }
 
@@ -44,20 +48,26 @@ namespace IRunes.Controllers
                 u.Username == username &&
                 u.Password == hashedPassword);
 
+            string errorMessage = string.Empty;
+
+            IHttpResponse response = null;
+
             if (user == null)
             {
-                return this.BadRequestError("Invalid username or password!");
+                this.ViewBag["@showError"] = "";
+                this.ViewBag["@errorMessage"] = "Invalid username or password!";
+                return this.View("User/Login");
             }
 
             this.IsUserAuthenticated = true;
 
-            this.ViewBag["@@username"] = username;  
+            this.ViewBag["@@username"] = username;
 
             request.Session.AddParameter("username", username);
 
             var cookieContent = this.UserCookieService.GetUserCookie(user.Username);
 
-            var response = new RedirectResult("/");
+            response = new RedirectResult("/");
 
             var cookie = new HttpCookie(".auth-IRunes", cookieContent, 7) { HttpOnly = true };
             response.Cookies.Add(cookie);
@@ -83,6 +93,8 @@ namespace IRunes.Controllers
 
         public IHttpResponse Register(IHttpRequest request)
         {
+            this.ViewBag["@showError"] = "none";
+
             return this.View("User/Register");
         }
 
@@ -93,24 +105,34 @@ namespace IRunes.Controllers
             var confirmPassword = request.FormData["confirmPassword"].ToString().UrlDecode();
             var email = request.FormData["email"].ToString().UrlDecode();
 
+
+
             if (string.IsNullOrWhiteSpace(username) || username.Length < 4)
             {
-                return this.BadRequestError("Please provide valid username with length of 4 or more characters.");
+                this.ViewBag["@showError"] = "";
+                this.ViewBag["@errorMessage"] = "Please provide valid username with length of 4 or more characters.";
+                return this.View("User/Register");
             }
 
             if (this.Context.Users.Any(u => u.Username == username))
             {
-                return this.BadRequestError("User with the same name already exists.");
+                this.ViewBag["@showError"] = "";
+                this.ViewBag["@errorMessage"] = "User with the same name already exists.";
+                return this.View("User/Register");
             }
 
             if (string.IsNullOrWhiteSpace(password) || password.Length < 6)
             {
-                return this.BadRequestError("Please provide password of length 6 or more.");
+                this.ViewBag["@showError"] = "";
+                this.ViewBag["@errorMessage"] = "Please provide password of length 6 or more characters.";
+                return this.View("User/Register");
             }
 
             if (password != confirmPassword)
             {
-                return this.BadRequestError("Passwords do not match.");
+                this.ViewBag["@showError"] = "";
+                this.ViewBag["@errorMessage"] = "Passwords do not match.";
+                return this.View("User/Register");
             }
 
             var hashedPassword = this.hashService.Hash(password);

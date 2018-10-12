@@ -145,7 +145,7 @@ namespace IRunes.Controllers
                 for (int i = 1; i <= tracks.Length; i++)
                 {
                     var currentTrack = tracks[i - 1];
-                    tracksInfo += $"<li>{i}.<a href=\"/tracks/details?id={currentTrack.Id}&albumId={album.Id}\">{currentTrack.Name}</a></li>";
+                    tracksInfo += $"<li>{i}.<a href=\"/tracks/details?trackId={currentTrack.Id}&albumId={album.Id}\">{currentTrack.Name}</a></li>";
                 }
                 this.ViewBag["@allTracks"] = tracksInfo;
             }
