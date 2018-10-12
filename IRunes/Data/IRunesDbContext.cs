@@ -17,7 +17,7 @@ namespace IRunes.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Server=IK-LDC\\SQLEXPRESS;Database=IRunes;Integrated Security=True;");
+            optionsBuilder.UseSqlServer("Server=.;Database=IRunes;Integrated Security=True;");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
