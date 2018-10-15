@@ -1,15 +1,12 @@
 ﻿using HTTP.Cookies;
-using HTTP.Requests.Contracts;
 using HTTP.Responses.Contracts;
-using IRunes.Extensions;
 using IRunes.Models;
-using IRunes.Services;
-using IRunes.Services.Contracts;
+using MvcFramework.Extensions;
+using MvcFramework.HttpAttributes;
+using MvcFramework.Services;
+using MvcFramework.Services.Contracts;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using WebServer.Results;
 
 namespace IRunes.Controllers
 {
@@ -22,25 +19,25 @@ namespace IRunes.Controllers
             this.hashService = new HashSerice();
         }
 
-        public IHttpResponse Login(IHttpRequest request)
+        [HttpGet("/users/login")]
+        public IHttpResponse Login()
         {
-            var username = this.GetUsername(request);
-
-            if (username != null)
+            if (this.User != null)
             {
-                this.ViewBag["@@username"] = username;
-                return this.View("Home/Index");
+                this.ViewBag["@@username"] = this.User;
+                return this.Redirect("/");
             }
 
             this.ViewBag["@showError"] = "none";
 
-            return this.View("User/Login");
+            return this.View("Login");
         }
 
-        public IHttpResponse DoLogin(IHttpRequest request)
+        [HttpPost("/users/login")]
+        public IHttpResponse DoLogin()
         {
-            var username = request.FormData["username"].ToString().Trim().UrlDecode();
-            var password = request.FormData["password"].ToString().UrlDecode();
+            var username = this.Request.FormData["username"].ToString().Trim().UrlDecode();
+            var password = this.Request.FormData["password"].ToString().UrlDecode();
 
             var hashedPassword = this.hashService.Hash(password);
 
@@ -56,18 +53,16 @@ namespace IRunes.Controllers
             {
                 this.ViewBag["@showError"] = "";
                 this.ViewBag["@errorMessage"] = "Invalid username or password!";
-                return this.View("User/Login");
+                return this.View("Login");
             }
-
-            this.IsUserAuthenticated = true;
 
             this.ViewBag["@@username"] = username;
 
-            request.Session.AddParameter("username", username);
+            this.Request.Session.AddParameter("username", username);
 
             var cookieContent = this.UserCookieService.GetUserCookie(user.Username);
 
-            response = new RedirectResult("/");
+            response = this.Redirect("/");
 
             var cookie = new HttpCookie(".auth-IRunes", cookieContent, 7) { HttpOnly = true };
             response.Cookies.Add(cookie);
@@ -75,35 +70,40 @@ namespace IRunes.Controllers
             return response;
         }
 
-        public IHttpResponse Logout(IHttpRequest request)
+        [HttpGet("/users/logout")]
+        public IHttpResponse Logout()
         {
-            var username = this.GetUsername(request);
-
-            if (username == null)
+            if (this.User == null)
             {
-                return new RedirectResult("/");
+                return this.Redirect("/");
             }
 
-            var response = new RedirectResult("/");
-            var cookie = request.Cookies.GetCookie(".auth-IRunes");
+            var response = this.Redirect("/");
+            var cookie = this.Request.Cookies.GetCookie(".auth-IRunes");
             cookie.Delete();
             response.Cookies.Add(cookie);
             return response;
         }
 
-        public IHttpResponse Register(IHttpRequest request)
+        [HttpGet("/users/register")]
+        public IHttpResponse Register()
         {
+            if (this.User != null)
+            {
+                return this.Redirect("/");
+            }
+
             this.ViewBag["@showError"] = "none";
 
-            return this.View("User/Register");
+            return this.View("Register");
         }
 
-        public IHttpResponse DoRegister(IHttpRequest request)
+        public IHttpResponse DoRegister()
         {
-            var username = request.FormData["username"].ToString().Trim().UrlDecode();
-            var password = request.FormData["password"].ToString().UrlDecode();
-            var confirmPassword = request.FormData["confirmPassword"].ToString().UrlDecode();
-            var email = request.FormData["email"].ToString().UrlDecode();
+            var username = this.Request.FormData["username"].ToString().Trim().UrlDecode();
+            var password = this.Request.FormData["password"].ToString().UrlDecode();
+            var confirmPassword = this.Request.FormData["confirmPassword"].ToString().UrlDecode();
+            var email = this.Request.FormData["email"].ToString().UrlDecode();
 
 
 
@@ -111,28 +111,28 @@ namespace IRunes.Controllers
             {
                 this.ViewBag["@showError"] = "";
                 this.ViewBag["@errorMessage"] = "Please provide valid username with length of 4 or more characters.";
-                return this.View("User/Register");
+                return this.View("Register");
             }
 
             if (this.Context.Users.Any(u => u.Username == username))
             {
                 this.ViewBag["@showError"] = "";
                 this.ViewBag["@errorMessage"] = "User with the same name already exists.";
-                return this.View("User/Register");
+                return this.View("Register");
             }
 
             if (string.IsNullOrWhiteSpace(password) || password.Length < 6)
             {
                 this.ViewBag["@showError"] = "";
                 this.ViewBag["@errorMessage"] = "Please provide password of length 6 or more characters.";
-                return this.View("User/Register");
+                return this.View("Register");
             }
 
             if (password != confirmPassword)
             {
                 this.ViewBag["@showError"] = "";
                 this.ViewBag["@errorMessage"] = "Passwords do not match.";
-                return this.View("User/Register");
+                return this.View("Register");
             }
 
             var hashedPassword = this.hashService.Hash(password);
@@ -152,10 +152,10 @@ namespace IRunes.Controllers
             }
             catch (Exception e)
             {
-                return this.ServerError(e.Message);
+               // return this.ServerError(e.Message);
             }
 
-            return new RedirectResult("/");
+            return this.Redirect("/");
         }
     }
 }

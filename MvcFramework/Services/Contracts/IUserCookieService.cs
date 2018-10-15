@@ -1,4 +1,4 @@
-﻿namespace IRunes.Services.Contracts
+﻿namespace MvcFramework.Services.Contracts
 {
     public interface IUserCookieService
     {

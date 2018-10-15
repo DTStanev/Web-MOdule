@@ -10,13 +10,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\HTTP\HTTP.csproj" />
-    <ProjectReference Include="..\WebServer\WebServer.csproj" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.0-preview2-35157" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.2.0-preview2-35157" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.0-preview2-35157" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.2.0-preview2-35157" />
+    <ProjectReference Include="..\MvcFramework\MvcFramework.csproj" />
   </ItemGroup>
 
 </Project>

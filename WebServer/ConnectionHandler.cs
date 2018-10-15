@@ -138,6 +138,6 @@
             }
 
             this.client.Shutdown(SocketShutdown.Both);
-        }
+            }
     }
 }

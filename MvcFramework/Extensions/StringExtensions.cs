@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Text;
 
-namespace IRunes.Extensions
+namespace MvcFramework.Extensions
 {
     public static class StringExtensions
     {

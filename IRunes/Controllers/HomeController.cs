@@ -1,5 +1,6 @@
 ﻿using HTTP.Requests.Contracts;
 using HTTP.Responses.Contracts;
+using MvcFramework.HttpAttributes;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,15 +9,14 @@ namespace IRunes.Controllers
 {
     public class HomeController : BaseController
     {
-        public IHttpResponse Index(IHttpRequest request)
+        [HttpGet("/")]
+        public IHttpResponse Index()
         {
-            var username = this.GetUsername(request);
-
-            if (username != null)
+            if (this.User != null)
             {
-                this.ViewBag["@@username"] = username;
+                this.ViewBag["@@username"] = this.User;
             }
-            return this.View("Home/Index");
+            return this.View("Index");
         }
     }
 }

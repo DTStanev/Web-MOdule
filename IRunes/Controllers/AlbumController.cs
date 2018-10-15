@@ -1,35 +1,30 @@
-﻿using HTTP.Requests.Contracts;
-using HTTP.Responses.Contracts;
-using IRunes.Extensions;
+﻿using HTTP.Responses.Contracts;
 using IRunes.Models;
 using Microsoft.EntityFrameworkCore;
+using MvcFramework.Extensions;
+using MvcFramework.HttpAttributes;
 using System;
-using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Text;
-using WebServer.Results;
 
 namespace IRunes.Controllers
 {
     public class AlbumController : BaseController
     {
-        public IHttpResponse All(IHttpRequest request)
+        [HttpGet("/albums/all")]
+        public IHttpResponse All()
         {
-            var username = this.GetUsername(request);
-
-            if (username == null)
+            if (this.User == null)
             {
-                return new RedirectResult("/");
+                return this.Redirect("/");
             }
 
             this.ViewBag["@allAlbums"] = "You don`t have albums yet.";
 
-            var user = this.Context.Users.Include(u => u.Albums).FirstOrDefault(u => u.Username == username);
+            var user = this.Context.Users.Include(u => u.Albums).FirstOrDefault(u => u.Username == this.User);
 
             if (user == null)
             {
-                return new RedirectResult("/users/login");
+                return this.Redirect("/users/login");
             }
 
             var albums = user.Albums.ToArray();
@@ -46,39 +41,37 @@ namespace IRunes.Controllers
                 this.ViewBag["@allAlbums"] = albumsInfo;
             }
 
-            return this.View("Album/Album"); ;
+            return this.View("Album"); ;
         }
 
-        public IHttpResponse Create(IHttpRequest request)
+        [HttpGet("/albums/create")]
+        public IHttpResponse Create()
         {
-            var username = this.GetUsername(request);
-
-            if (username == null)
+            if (this.User == null)
             {
-                return new RedirectResult("/");
+                return this.Redirect("/");
             }
 
-            return this.View("Album/Create");
+            return this.View("Create");
         }
 
-        public IHttpResponse DoCreate(IHttpRequest request)
+        [HttpPost("albums/create")]
+        public IHttpResponse DoCreate()
         {
-            var username = this.GetUsername(request);
-
-            if (username == null)
+            if (this.User == null)
             {
-                return new RedirectResult("/");
+                return this.Redirect("/");
             }
 
-            var user = this.Context.Users.Include(u => u.Albums).FirstOrDefault(u => u.Username == username);
+            var user = this.Context.Users.Include(u => u.Albums).FirstOrDefault(u => u.Username == this.User);
 
             if (user == null)
             {
-                return new RedirectResult("/");
+                return this.Redirect("/");
             }
 
-            var albumName = request.FormData["albumName"].ToString().UrlDecode();
-            var albumCover = request.FormData["albumCover"].ToString().UrlDecode();
+            var albumName = this.Request.FormData["albumName"].ToString().UrlDecode();
+            var albumCover = this.Request.FormData["albumCover"].ToString().UrlDecode();
                         
             if (string.IsNullOrWhiteSpace(albumName) || string.IsNullOrWhiteSpace(albumCover))
             {
@@ -99,27 +92,26 @@ namespace IRunes.Controllers
             }
             catch (Exception e)
             {
-                return this.ServerError(e.Message);
+               // return this.ServerError(e.Message);
             }
 
-            return new RedirectResult("/albums/all");
+            return this.Redirect("/albums/all");
         }
 
-        public IHttpResponse Details(IHttpRequest request)
+        [HttpGet("/albums/details")]
+        public IHttpResponse Details()
         {
-            var username = this.GetUsername(request);
-
-            if (username == null)
+            if (this.User == null)
             {
-                return new RedirectResult("/");
+                return this.Redirect("/");
             }
 
-            var albumId = request.QueryData["id"].ToString().UrlDecode();
+            var albumId = this.Request.QueryData["id"].ToString().UrlDecode();
             var album = this.Context.Albums.Include(a => a.Tracks).FirstOrDefault(a => a.Id == albumId);
 
             if (album == null)
             {
-                return new RedirectResult("/albums/all");
+                return this.Redirect("/albums/all");
             }
 
             this.ViewBag["@anyTracks"] = "none";
@@ -150,7 +142,7 @@ namespace IRunes.Controllers
                 this.ViewBag["@allTracks"] = tracksInfo;
             }
 
-            return this.View("Album/Details");
+            return this.View("Details");
         }
     }
 }

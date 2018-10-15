@@ -1,45 +1,42 @@
-﻿using HTTP.Requests.Contracts;
-using HTTP.Responses.Contracts;
-using IRunes.Extensions;
+﻿using HTTP.Responses.Contracts;
 using IRunes.Models;
 using Microsoft.EntityFrameworkCore;
+using MvcFramework.Extensions;
+using MvcFramework.HttpAttributes;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using WebServer.Results;
 
 namespace IRunes.Controllers
 {
     public class TrackController : BaseController
     {
-        public IHttpResponse DoCreate(IHttpRequest request)
-        {
-            var username = this.GetUsername(request);
 
-            if (username == null)
+        [HttpPost("/tracks/create")]
+        public IHttpResponse DoCreate()
+        {            
+            if (this.User == null)
             {
-                return this.View("Home/Index");
+                return this.Redirect("/");
             }
 
-            var albumId = request.QueryData["albumId"].ToString().UrlDecode();
+            var albumId = this.Request.QueryData["albumId"].ToString().UrlDecode();
 
             var album = this.Context.Albums.Include(a => a.Tracks).FirstOrDefault(a => a.Id == albumId);
 
             if (album == null)
             {
-                return new RedirectResult("/albums/all");
+                return this.Redirect("/albums/all");
             }
 
-            var trackName = request.FormData["trackName"].ToString().UrlDecode();
-            var trackLink = request.FormData["trackLink"].ToString().UrlDecode();
+            var trackName = this.Request.FormData["trackName"].ToString().UrlDecode();
+            var trackLink = this.Request.FormData["trackLink"].ToString().UrlDecode();
 
-            if (!decimal.TryParse(request.FormData["trackPrice"].ToString().UrlDecode(), out var trackPrice)
+            if (!decimal.TryParse(this.Request.FormData["trackPrice"].ToString().UrlDecode(), out var trackPrice)
                 || trackPrice < 1
                 || string.IsNullOrWhiteSpace(trackName) 
                 || string.IsNullOrWhiteSpace(trackLink))
             {
-                return new RedirectResult($"/albums/details?id={albumId}");
+                return this.Redirect($"/albums/details?id={albumId}");
             }
 
             var track = new Track
@@ -57,43 +54,41 @@ namespace IRunes.Controllers
             }
             catch (Exception e)
             {
-                return this.ServerError(e.Message);
+               // return this.ServerError(e.Message);
             }
-            return new RedirectResult($"/albums/details?id={albumId}");
+            return this.Redirect($"/albums/details?id={albumId}");
         }
 
-        internal IHttpResponse Create(IHttpRequest request)
+        [HttpGet("/tracks/create")]
+        public IHttpResponse Create()
         {
-            var username = this.GetUsername(request);
-
-            if (username == null)
+            if (this.User == null)
             {
-                return new RedirectResult("/");
+                return this.Redirect("/");
             }
 
-            var albumId = request.QueryData["albumId"].ToString().UrlDecode();
+            var albumId = this.Request.QueryData["albumId"].ToString().UrlDecode();
             this.ViewBag["@albumId"] = albumId;
 
-            return this.View("Track/Create");
+            return this.View("Create");
         }
 
-        public  IHttpResponse Details(IHttpRequest request)
+        [HttpGet("/tracks/details")]
+        public  IHttpResponse Details()
         {
-            var username = this.GetUsername(request);
-
-            if (username == null)
+            if (this.User == null)
             {
-                return new RedirectResult("/");
+                return this.Redirect("/");
             }
 
-            var albumId = request.QueryData["albumId"].ToString().UrlDecode();
-            var trackId = request.QueryData["trackId"].ToString().UrlDecode();
+            var albumId = this.Request.QueryData["albumId"].ToString().UrlDecode();
+            var trackId = this.Request.QueryData["trackId"].ToString().UrlDecode();
 
             var track = this.Context.Tracks.FirstOrDefault(t => t.Id == trackId);
 
             if (track == null)
             {
-                return new RedirectResult("/albums/all");
+                return this.Redirect("/albums/all");
             }
 
             this.ViewBag["@trackName"] = track.Name;
@@ -101,7 +96,7 @@ namespace IRunes.Controllers
             this.ViewBag["@videoUrl"] = track.Link;
             this.ViewBag["@albumId"] = albumId;
 
-            return this.View("Track/Details");
+            return this.View("Details");
         }
     }
 }

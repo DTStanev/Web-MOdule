@@ -1,4 +1,4 @@
-﻿namespace IRunes.Services
+﻿namespace MvcFramework.Services
 {
     using Contracts;
     using System;
