@@ -1,12 +1,20 @@
 ﻿namespace MvcFramework.Services
 {
     using Contracts;
+    using MvcFramework.Logger.Contracts;
     using System;
     using System.Security.Cryptography;
     using System.Text;
 
     public class HashSerice :IHashService
     {
+        private readonly ILogger logger;
+
+        public HashSerice(ILogger logger)
+        {
+            this.logger = logger;
+        }
+
         public string StrongHash(string stringToHash)
         {
             var result = stringToHash;
@@ -27,6 +35,9 @@
                 var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(stringToHash));
                 // Get the hashed string.  
                 var hash = BitConverter.ToString(hashedBytes).Replace("-", "").ToLower();
+
+                this.logger.Log(hash);
+
                 return hash;
             }
         }

@@ -1,6 +1,7 @@
 ﻿using HTTP.Cookies;
 using HTTP.Responses.Contracts;
 using IRunes.Models;
+using IRunes.ViewModels;
 using MvcFramework.Extensions;
 using MvcFramework.HttpAttributes;
 using MvcFramework.Services;
@@ -14,9 +15,9 @@ namespace IRunes.Controllers
     {
         private readonly IHashService hashService;
 
-        public UserController()
+        public UserController(IHashService hashService)
         {
-            this.hashService = new HashSerice();
+            this.hashService = hashService;
         }
 
         [HttpGet("/users/login")]
@@ -34,10 +35,10 @@ namespace IRunes.Controllers
         }
 
         [HttpPost("/users/login")]
-        public IHttpResponse DoLogin()
+        public IHttpResponse DoLogin(DoLoginInputViewModel model)
         {
-            var username = this.Request.FormData["username"].ToString().Trim().UrlDecode();
-            var password = this.Request.FormData["password"].ToString().UrlDecode();
+            var username = model.Username.Trim().UrlDecode();
+            var password = model.Password.UrlDecode();
 
             var hashedPassword = this.hashService.Hash(password);
 
@@ -98,12 +99,12 @@ namespace IRunes.Controllers
             return this.View("Register");
         }
 
-        public IHttpResponse DoRegister()
+        public IHttpResponse DoRegister(DoRegisterInputViewModel model)
         {
-            var username = this.Request.FormData["username"].ToString().Trim().UrlDecode();
-            var password = this.Request.FormData["password"].ToString().UrlDecode();
-            var confirmPassword = this.Request.FormData["confirmPassword"].ToString().UrlDecode();
-            var email = this.Request.FormData["email"].ToString().UrlDecode();
+            var username = model.Username.Trim().UrlDecode();
+            var password = model.Password.UrlDecode();
+            var confirmPassword = model.ConfirmPassword.UrlDecode();
+            var email = model.Email.UrlDecode();
 
 
 

@@ -32,6 +32,7 @@
             this.isRunning = true;
 
             Console.WriteLine($"Server started at http://{LocalhostIpAddress}:{this.port}");
+
             while (isRunning)
             {
                 Console.WriteLine("Waiting for client...");

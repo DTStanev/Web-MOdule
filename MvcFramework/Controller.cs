@@ -25,8 +25,7 @@ namespace MvcFramework
         private const string SLASH_SYMBOL = "/";
         
         protected Controller()
-        {
-            this.UserCookieService = new UserCookieService();
+        {         
             this.ViewBag = new Dictionary<string, string>();
             this.Response = new HttpResponse { StatusCode = HttpStatusCode.OK };
         }
@@ -37,7 +36,7 @@ namespace MvcFramework
 
         public IHttpResponse Response { get; set; }
 
-        protected IUserCookieService UserCookieService { get; }
+        public IUserCookieService UserCookieService { get; internal set; }
 
         public string User
         {

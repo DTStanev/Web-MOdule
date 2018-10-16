@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MvcFramework.Services.Contracts;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using WebServer.Routing;
@@ -9,6 +10,6 @@ namespace MvcFramework.Contracts
     {
         void Configure();
 
-        void ConfigureServices();
+        void ConfigureServices(IServiceCollection collection);
     }
 }

@@ -1,6 +1,7 @@
 ﻿namespace MvcFramework.Services
 {
     using Contracts;
+    using MvcFramework.Logger.Contracts;
     using System;
     using System.IO;
     using System.Security.Cryptography;
@@ -10,6 +11,13 @@
     {
         public const string EncryptKey = "E646C8DF278CD5931069B522E695D4F2";
 
+        private readonly ILogger logger;
+
+        public UserCookieService(ILogger logger)
+        {
+            this.logger = logger;
+        }
+
         public string GetUserCookie(string userName)
         {
             var cookieContent = EncryptString(userName, EncryptKey);
@@ -18,6 +26,7 @@
 
         public string GetUserData(string cookieContent)
         {
+            this.logger.Log("GetUserData()" + cookieContent);
             var username = DecryptString(cookieContent, EncryptKey);
             return username;
         }

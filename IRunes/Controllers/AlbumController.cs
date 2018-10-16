@@ -1,5 +1,6 @@
 ﻿using HTTP.Responses.Contracts;
 using IRunes.Models;
+using IRunes.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using MvcFramework.Extensions;
 using MvcFramework.HttpAttributes;
@@ -33,7 +34,7 @@ namespace IRunes.Controllers
 
             foreach (var album in albums)
             {
-                albumsInfo += $"<a href=\"/albums/details?id={album.Id}\">{album.Name}</a></br>";
+                albumsInfo += $"<a href=\"/albums/details?albumId={album.Id}\">{album.Name}</a></br>";
             }
 
             if (!string.IsNullOrWhiteSpace(albumsInfo))
@@ -56,7 +57,7 @@ namespace IRunes.Controllers
         }
 
         [HttpPost("albums/create")]
-        public IHttpResponse DoCreate()
+        public IHttpResponse DoCreate(DoCreateAlbumViewModel model)
         {
             if (this.User == null)
             {
@@ -70,8 +71,8 @@ namespace IRunes.Controllers
                 return this.Redirect("/");
             }
 
-            var albumName = this.Request.FormData["albumName"].ToString().UrlDecode();
-            var albumCover = this.Request.FormData["albumCover"].ToString().UrlDecode();
+            var albumName = model.AlbumName.UrlDecode();
+            var albumCover = model.AlbumCover.UrlDecode();
                         
             if (string.IsNullOrWhiteSpace(albumName) || string.IsNullOrWhiteSpace(albumCover))
             {
@@ -99,14 +100,15 @@ namespace IRunes.Controllers
         }
 
         [HttpGet("/albums/details")]
-        public IHttpResponse Details()
+        public IHttpResponse Details(AlbumDetailsViewModel model)
         {
             if (this.User == null)
             {
                 return this.Redirect("/");
             }
 
-            var albumId = this.Request.QueryData["id"].ToString().UrlDecode();
+            var albumId = model.AlbumId.UrlDecode();
+
             var album = this.Context.Albums.Include(a => a.Tracks).FirstOrDefault(a => a.Id == albumId);
 
             if (album == null)

@@ -13,6 +13,7 @@
     using System.Net;
     using System.Net.Sockets;
     using System.Text;
+    using System.Threading;
     using System.Threading.Tasks;
     using WebServer.Results;
 
@@ -79,6 +80,8 @@
         {
             byte[] byteSegments = httpResponse.GetBytes();
 
+            Thread.Sleep(15000);
+
             await this.client.SendAsync(byteSegments, SocketFlags.None);
         }
 
@@ -130,11 +133,11 @@
             }
             catch (BadRequestException e)
             {
-                await this.PrepareResponse(new TextResult(e.Message, HttpStatusCode.BadRequest));
+                await this.PrepareResponse(new TextResult(e.ToString(), HttpStatusCode.BadRequest));
             }
             catch (Exception e)
             {
-                await this.PrepareResponse(new TextResult(e.Message, HttpStatusCode.InternalServerError));
+                await this.PrepareResponse(new TextResult(e.ToString(), HttpStatusCode.InternalServerError));
             }
 
             this.client.Shutdown(SocketShutdown.Both);
