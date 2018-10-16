@@ -1,6 +1,7 @@
 ﻿using HTTP.Responses.Contracts;
 using IRunes.Models;
 using IRunes.ViewModels;
+using IRunes.ViewModels.Track;
 using Microsoft.EntityFrameworkCore;
 using MvcFramework.Extensions;
 using MvcFramework.HttpAttributes;
@@ -12,14 +13,14 @@ namespace IRunes.Controllers
     public class TrackController : BaseController
     {
         [HttpGet("/tracks/create")]
-        public IHttpResponse Create()
+        public IHttpResponse Create(CreateTrackViewModel model)
         {
             if (this.User == null)
             {
                 return this.Redirect("/");
             }
 
-            var albumId = this.Request.QueryData["albumId"].ToString().UrlDecode();
+            var albumId = model.AlbumId;
             this.ViewBag["@albumId"] = albumId;
 
             return this.View("Create");
@@ -50,7 +51,7 @@ namespace IRunes.Controllers
                 || string.IsNullOrWhiteSpace(trackName)
                 || string.IsNullOrWhiteSpace(trackLink))
             {
-                return this.Redirect($"/albums/details?id={albumId}");
+                return this.Redirect($"/albums/details?albumId={albumId}");
             }
 
             var track = new Track
@@ -70,7 +71,7 @@ namespace IRunes.Controllers
             {
                 // return this.ServerError(e.Message);
             }
-            return this.Redirect($"/albums/details?id={albumId}");
+            return this.Redirect($"/albums/details?albumId={albumId}");
         }
 
         [HttpGet("/tracks/details")]

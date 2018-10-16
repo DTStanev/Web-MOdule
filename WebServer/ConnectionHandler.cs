@@ -79,9 +79,7 @@
         private async Task PrepareResponse(IHttpResponse httpResponse)
         {
             byte[] byteSegments = httpResponse.GetBytes();
-
-            Thread.Sleep(15000);
-
+            
             await this.client.SendAsync(byteSegments, SocketFlags.None);
         }
 

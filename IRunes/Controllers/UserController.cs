@@ -2,6 +2,7 @@
 using HTTP.Responses.Contracts;
 using IRunes.Models;
 using IRunes.ViewModels;
+using IRunes.ViewModels.User;
 using MvcFramework.Extensions;
 using MvcFramework.HttpAttributes;
 using MvcFramework.Services;

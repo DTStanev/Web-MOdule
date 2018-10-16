@@ -1,6 +1,7 @@
 ﻿using HTTP.Responses.Contracts;
 using IRunes.Models;
 using IRunes.ViewModels;
+using IRunes.ViewModels.Album;
 using Microsoft.EntityFrameworkCore;
 using MvcFramework.Extensions;
 using MvcFramework.HttpAttributes;
@@ -56,7 +57,7 @@ namespace IRunes.Controllers
             return this.View("Create");
         }
 
-        [HttpPost("albums/create")]
+        [HttpPost("/albums/create")]
         public IHttpResponse DoCreate(DoCreateAlbumViewModel model)
         {
             if (this.User == null)
@@ -99,7 +100,7 @@ namespace IRunes.Controllers
             return this.Redirect("/albums/all");
         }
 
-        [HttpGet("/albums/details")]
+        [HttpGet("/albums/details")]        
         public IHttpResponse Details(AlbumDetailsViewModel model)
         {
             if (this.User == null)
@@ -115,7 +116,7 @@ namespace IRunes.Controllers
             {
                 return this.Redirect("/albums/all");
             }
-
+            
             this.ViewBag["@anyTracks"] = "none";
 
             var albumCover = album.Cover;
