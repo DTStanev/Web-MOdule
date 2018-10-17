@@ -1,12 +1,8 @@
-﻿using HTTP.Requests.Contracts;
-using HTTP.Responses.Contracts;
-using MvcFramework.HttpAttributes;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace IRunes.Controllers
+﻿namespace IRunes.Controllers
 {
+    using HTTP.Responses.Contracts;
+    using MvcFramework.HttpAttributes;
+
     public class HomeController : BaseController
     {
         [HttpGet("/")]

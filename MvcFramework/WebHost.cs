@@ -1,23 +1,23 @@
-﻿using HTTP.Requests.Contracts;
-using HTTP.Responses.Contracts;
-using MvcFramework.Contracts;
-using MvcFramework.Extensions;
-using MvcFramework.HttpAttributes;
-using MvcFramework.Services;
-using MvcFramework.Services.Contracts;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Net;
-using System.Reflection;
-using System.Threading;
-using WebServer;
-using WebServer.Results;
-using WebServer.Routing;
-
-namespace MvcFramework
+﻿namespace MvcFramework
 {
+    using HTTP.Requests.Contracts;
+    using HTTP.Responses.Contracts;
+    using Contracts;
+    using Extensions;
+    using HttpAttributes;
+    using Services;
+    using Services.Contracts;
+    using System;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.Linq;
+    using System.Net;
+    using System.Reflection;
+    using System.Threading;
+    using WebServer;
+    using WebServer.Results;
+    using WebServer.Routing;
+
     public static class WebHost
     {
         public static void Start(IMvcApplication application)
@@ -61,7 +61,7 @@ namespace MvcFramework
                     }
 
                     routingTable.Add(httpAttribute.Method, httpAttribute.Path,
-                       (request) => 
+                       (request) =>
                        ExecuteAction(controller, methodInfo, request, serviceCollection));
                 }
             }
@@ -97,39 +97,54 @@ namespace MvcFramework
 
             foreach (var actionParameter in actionParameters)
             {
-                var instance = serviceCollection.CreateInstance(actionParameter.ParameterType);
 
-                var properties = actionParameter.ParameterType.GetProperties();
-
-                foreach (var propertyInfo in properties)
+                if (actionParameter.ParameterType.IsValueType ||
+                    Type.GetTypeCode(actionParameter.ParameterType) == TypeCode.String)
                 {
-                    var key = propertyInfo.Name.ToLower();
-                    string stringValue = null;
+                    var stringValue = GetRequestData(request, actionParameter.Name);
 
-                    if (request.FormData.Any(x => x.Key.ToLower() == key))
-                    {
-                        stringValue = request.FormData.First(x => x.Key.ToLower() == key).Value.ToString().UrlDecode();
-                    }
-                    else if (request.QueryData.Any(x => x.Key.ToLower() == key))
-                    {
-                        stringValue = request.QueryData.First(x => x.Key.ToLower() == key).Value.ToString().UrlDecode();
-                    }
+                    actionParameterObjects.Add(TryParse(stringValue, actionParameter.ParameterType));
 
-                    var typeCode = Type.GetTypeCode(propertyInfo.PropertyType);
-                    var value = TryParse(stringValue, typeCode);
-
-                    propertyInfo.SetMethod.Invoke(instance, new object[] { stringValue });
                 }
+                else
+                {
+                    var instance = serviceCollection.CreateInstance(actionParameter.ParameterType);
+                    var properties = actionParameter.ParameterType.GetProperties();
 
-                actionParameterObjects.Add(instance);
+                    foreach (var propertyInfo in properties)
+                    {
+                        var stringValue = GetRequestData(request, propertyInfo.Name);
+                        var value = TryParse(stringValue, propertyInfo.PropertyType);
+                        propertyInfo.SetMethod.Invoke(instance, new object[] { value });
+                    }
+
+                    actionParameterObjects.Add(instance);
+                }
+                return actionParameterObjects;
             }
-
-            return actionParameterObjects;
         }
 
-        private static object TryParse(string stringValue, TypeCode typeCode)
+        private static string GetRequestData(IHttpRequest request, string key)
         {
-            object value = stringValue;
+            key = key.ToLower();
+            string stringValue = null;
+            if (request.FormData.Any(x => x.Key.ToLower() == key))
+            {
+                stringValue = request.FormData.First(x => x.Key.ToLower() == key).Value.ToString().UrlDecode();
+            }
+            else if (request.QueryData.Any(x => x.Key.ToLower() == key))
+            {
+                stringValue = request.QueryData.First(x => x.Key.ToLower() == key).Value.ToString().UrlDecode();
+            }
+            return stringValue;
+        }
+
+        private static object TryParse(string stringValue, Type type)
+        {
+            var typeCode = Type.GetTypeCode(type);
+
+            object value = null;
+
             switch (typeCode)
             {
                 case TypeCode.Int32:
@@ -150,7 +165,11 @@ namespace MvcFramework
                 case TypeCode.DateTime:
                     if (DateTime.TryParse(stringValue, out var dateTimeValue)) value = dateTimeValue;
                     break;
+                case TypeCode.String:
+                    value = stringValue;
+                    break;
             }
+
             return value;
         }
     }

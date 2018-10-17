@@ -8,6 +8,6 @@
 
         public string TrackLink { get; set; }
 
-        public string TrackPrice { get; set; }
+        public decimal TrackPrice { get; set; }
     }
 }

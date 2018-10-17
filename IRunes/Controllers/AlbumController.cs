@@ -1,15 +1,13 @@
-﻿using HTTP.Responses.Contracts;
-using IRunes.Models;
-using IRunes.ViewModels;
-using IRunes.ViewModels.Album;
-using Microsoft.EntityFrameworkCore;
-using MvcFramework.Extensions;
-using MvcFramework.HttpAttributes;
-using System;
-using System.Linq;
-
-namespace IRunes.Controllers
+﻿namespace IRunes.Controllers
 {
+    using HTTP.Responses.Contracts;
+    using Models;
+    using Microsoft.EntityFrameworkCore;
+    using MvcFramework.HttpAttributes;
+    using System;
+    using System.Linq;
+    using ViewModels.Album;
+
     public class AlbumController : BaseController
     {
         [HttpGet("/albums/all")]
@@ -72,8 +70,8 @@ namespace IRunes.Controllers
                 return this.Redirect("/");
             }
 
-            var albumName = model.AlbumName.UrlDecode();
-            var albumCover = model.AlbumCover.UrlDecode();
+            var albumName = model.AlbumName;
+            var albumCover = model.AlbumCover;
                         
             if (string.IsNullOrWhiteSpace(albumName) || string.IsNullOrWhiteSpace(albumCover))
             {
@@ -108,7 +106,7 @@ namespace IRunes.Controllers
                 return this.Redirect("/");
             }
 
-            var albumId = model.AlbumId.UrlDecode();
+            var albumId = model.AlbumId;
 
             var album = this.Context.Albums.Include(a => a.Tracks).FirstOrDefault(a => a.Id == albumId);
 

@@ -1,8 +1,8 @@
-﻿using IRunes.Models;
-using Microsoft.EntityFrameworkCore;
-
-namespace IRunes.Data
+﻿namespace IRunes.Data
 {
+    using Microsoft.EntityFrameworkCore;
+    using Models;
+    
     public class IRunesDbContext : DbContext
     {
         public DbSet<User> Users { get; set; }

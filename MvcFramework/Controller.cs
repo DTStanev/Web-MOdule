@@ -15,14 +15,14 @@ namespace MvcFramework
         protected const string VIEWS_FOLDER_PATH = "../../../Views/";
 
         protected const string HTML_EXTENTION = ".html";      
-
-        private const string AUTH_COOKIE_KEY = ".auth-IRunes";
-
-        private const string CONTROLLER_WORD_IN_CURRENT_CONTROLLER = "Controller";
+        
+        private const string CONTROLLER_WORD = "Controller";
 
         private const string LAYOUT = "_Layout";
 
         private const string SLASH_SYMBOL = "/";
+
+        private const string AUTH_COOKIE_KEY = ".auth-IRunes";
         
         protected Controller()
         {         
@@ -70,7 +70,7 @@ namespace MvcFramework
         protected IHttpResponse View(string viewName)
         {
             var layout = System.IO.File.ReadAllText(VIEWS_FOLDER_PATH + LAYOUT + HTML_EXTENTION);
-            var contentFolderName = this.GetType().Name.Replace(CONTROLLER_WORD_IN_CURRENT_CONTROLLER, SLASH_SYMBOL);
+            var contentFolderName = this.GetType().Name.Replace(CONTROLLER_WORD, SLASH_SYMBOL);
             var content = System.IO.File.ReadAllText(VIEWS_FOLDER_PATH + contentFolderName + viewName + HTML_EXTENTION);
             this.SetViewBagParameters(content);
 

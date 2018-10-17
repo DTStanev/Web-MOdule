@@ -37,17 +37,17 @@ namespace MvcFramework.Services
                 throw new Exception($"Type {type.FullName} cannot be instantiated.");
             }
 
-            var constructor = type.GetConstructors().First();
-            var ctorParameters = constructor.GetParameters();
-            var construcotrParameterObjects = new List<object>();
+            var constructor = type.GetConstructors().OrderBy(x => x.GetParameters().Length).First();
+            var constructorParameters = constructor.GetParameters();
+            var constructorParameterObjects = new List<object>();
 
-            foreach (var constructorParameter in ctorParameters)
+            foreach (var constructorParameter in constructorParameters)
             {
                 var parameterObject = this.CreateInstance(constructorParameter.ParameterType);
-                construcotrParameterObjects.Add(parameterObject);
+                constructorParameterObjects.Add(parameterObject);
             }
 
-            var obj = constructor.Invoke(construcotrParameterObjects.ToArray());
+            var obj = constructor.Invoke(constructorParameterObjects.ToArray());
 
             return obj;
         }

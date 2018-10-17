@@ -1,15 +1,14 @@
-﻿using HTTP.Responses.Contracts;
-using IRunes.Models;
-using IRunes.ViewModels;
-using IRunes.ViewModels.Track;
-using Microsoft.EntityFrameworkCore;
-using MvcFramework.Extensions;
-using MvcFramework.HttpAttributes;
-using System;
-using System.Linq;
-
-namespace IRunes.Controllers
+﻿namespace IRunes.Controllers
 {
+    using HTTP.Responses.Contracts;
+    using Models;
+    using Microsoft.EntityFrameworkCore;
+    using MvcFramework.Extensions;
+    using MvcFramework.HttpAttributes;
+    using System;
+    using System.Linq;
+    using ViewModels.Track;
+
     public class TrackController : BaseController
     {
         [HttpGet("/tracks/create")]
@@ -34,7 +33,7 @@ namespace IRunes.Controllers
                 return this.Redirect("/");
             }
 
-            var albumId = model.AlbumId.UrlDecode();
+            var albumId = model.AlbumId;
 
             var album = this.Context.Albums.Include(a => a.Tracks).FirstOrDefault(a => a.Id == albumId);
 
@@ -43,11 +42,11 @@ namespace IRunes.Controllers
                 return this.Redirect("/albums/all");
             }
 
-            var trackName = model.TrackName.UrlDecode();
-            var trackLink = model.TrackLink.UrlDecode();
+            var trackName = model.TrackName;
+            var trackLink = model.TrackLink;
+            var trackPrice = model.TrackPrice;
 
-            if (!decimal.TryParse(model.TrackPrice.UrlDecode(), out var trackPrice)
-                || trackPrice < 1
+            if (trackPrice < 1
                 || string.IsNullOrWhiteSpace(trackName)
                 || string.IsNullOrWhiteSpace(trackLink))
             {
@@ -82,8 +81,8 @@ namespace IRunes.Controllers
                 return this.Redirect("/");
             }
 
-            var albumId = model.AlbumId.UrlDecode();
-            var trackId = model.TrackId.UrlDecode();
+            var albumId = model.AlbumId;
+            var trackId = model.TrackId;
 
             var track = this.Context.Tracks.FirstOrDefault(t => t.Id == trackId);
 
