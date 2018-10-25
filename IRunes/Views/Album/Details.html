@@ -1,12 +1,13 @@
 ﻿<div class="container">
     <div class="row">
         <div class="col-md-5 text-center">
-        <div><img src="@albumCover" width="250" height="250" /></div>
-        <div>Album Name: @albumName</div>
-        <div>Album Price: $@albumPrice</div>
+        <div><img src="@model.Cover" width="250" height="250" /></div>
+        <div>Album Name: @model.Name</div>
+            { var priceAfterDiscount = (model.Price * 0.87m).ToString("F2"); }
+        <div>Album Price: $@priceAfterDiscount</div>
         <div class="row">
             <div class="col-md-6 col-xs-12" style="margin-bottom:5px;">
-                <a href="/tracks/create?albumId=@albumId" class="btn btn-success ">Create Track</a>
+                <a href="/tracks/create?albumId=@model.Id" class="btn btn-success ">Create Track</a>
             </div>
             <div class="col-md-6 col-xs-12">
                 <a href="/albums/all" class="btn btn-success ">Back To All</a>
@@ -14,13 +15,16 @@
         </div>
     </div>
     <div class="col-md-1"></div>
-    <div style="display:@noTracks">Tracks</div>
-    <div class="col-md-6" style="display:@anyTracks">
+    <div class="col-md-6">
         <ul style="list-style-type:none;">
             <li>Tracks
-            <ul>@allTracks</ul>
+                <ol>
+                    @foreach(var track in model.Tracks)
+                    {
+                        <li><a href="/tracks/details?trackId=@track.Id&albumId=@Model.Id">@track.Name</a></li>
+                    }
+                </ol>
             </li>
         </ul>
     </div>
-</div>
 </div>

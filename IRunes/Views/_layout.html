@@ -19,26 +19,24 @@
                     <li class="nav-item active">
                         <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
                     </li>
-                    <div style="display:@IsNotAuthenticated">
+                    @if(User == null)
+                    {
                         <li class="nav-item active">
                             <a class="nav-link" href="/users/login">Login</a>
                         </li>
-                    </div>
-                    <div style="display:@IsAuthenticated">
-                        <li class="nav-item active">
-                            <a class="nav-link" href="/albums/all">Albums</a>
-                        </li>
-                    </div>
-                    <div style="display:@IsAuthenticated">
-                        <li class="nav-item active">
-                            <a class="nav-link" href="/users/logout">Logout</a>
-                        </li>
-                    </div>
-                    <div style="display:@IsNotAuthenticated">
                         <li class="nav-item active">
                             <a class="nav-link" href="/users/register">Register</a>
                         </li>
-                    </div>
+                    }
+                    @else
+                    {
+                        <li class="nav-item active">
+                        <a class="nav-link" href="/albums/all">Albums</a>
+                        </li>
+                        <li class="nav-item active">
+                            <a class="nav-link" href="/users/logout">Logout</a>
+                        </li>
+                    }
                 </ul>
             </div>
         </nav>

@@ -3,11 +3,10 @@
     using HTTP.Responses.Contracts;
     using Models;
     using Microsoft.EntityFrameworkCore;
-    using MvcFramework.Extensions;
-    using MvcFramework.HttpAttributes;
     using System;
     using System.Linq;
     using ViewModels.Track;
+    using MvcFramework.HttpAttributes;
 
     public class TrackController : BaseController
     {
@@ -20,9 +19,8 @@
             }
 
             var albumId = model.AlbumId;
-            this.ViewBag["@albumId"] = albumId;
 
-            return this.View("Create");
+            return this.View("Create", model);
         }
 
         [HttpPost("/tracks/create")]
@@ -46,11 +44,15 @@
             var trackLink = model.TrackLink;
             var trackPrice = model.TrackPrice;
 
-            if (trackPrice < 1
-                || string.IsNullOrWhiteSpace(trackName)
+            if (trackPrice < 1)
+            {
+                return this.BadRequestError("Create", "The price cannot be below 1 dollar", model);
+            }
+
+            if (string.IsNullOrWhiteSpace(trackName)
                 || string.IsNullOrWhiteSpace(trackLink))
             {
-                return this.Redirect($"/albums/details?albumId={albumId}");
+                return this.BadRequestError("Create", "All fields are required!", model);
             }
 
             var track = new Track
@@ -68,7 +70,7 @@
             }
             catch (Exception e)
             {
-                // return this.ServerError(e.Message);
+                return this.ServerError(e.Message);
             }
             return this.Redirect($"/albums/details?albumId={albumId}");
         }
@@ -91,12 +93,11 @@
                 return this.Redirect("/albums/all");
             }
 
-            this.ViewBag["@trackName"] = track.Name;
-            this.ViewBag["@trackPrice"] = track.Price.ToString("F2");
-            this.ViewBag["@videoUrl"] = track.Link;
-            this.ViewBag["@albumId"] = albumId;
+            model.Price = track.Price;
+            model.Name = track.Name;
+            model.Link = track.Link;
 
-            return this.View("Details");
+            return this.View("Details", model);
         }
     }
 }

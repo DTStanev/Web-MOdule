@@ -110,9 +110,9 @@
 
         private void ParseCookies()
         {
-            if (!this.Headers.ContainsHeader(HttpHeader.Cookie)) return;
+            if (!this.Headers.ContainsHeader(HttpHeader.COOKIE)) return;
 
-            string cookiesString = this.Headers.GetHeader(HttpHeader.Cookie).Value;
+            string cookiesString = this.Headers.GetHeader(HttpHeader.COOKIE).Value;
 
             if (string.IsNullOrEmpty(cookiesString)) return;
 

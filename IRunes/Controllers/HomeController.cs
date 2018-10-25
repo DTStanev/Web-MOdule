@@ -2,16 +2,13 @@
 {
     using HTTP.Responses.Contracts;
     using MvcFramework.HttpAttributes;
+    using MvcFramework.ViewEngine.Contracts;
 
     public class HomeController : BaseController
     {
         [HttpGet("/")]
         public IHttpResponse Index()
-        {
-            if (this.User != null)
-            {
-                this.ViewBag["@@username"] = this.User;
-            }
+        {            
             return this.View("Index");
         }
     }

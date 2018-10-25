@@ -13,7 +13,6 @@
     using System.Linq;
     using System.Net;
     using System.Reflection;
-    using System.Threading;
     using WebServer;
     using WebServer.Results;
     using WebServer.Routing;
@@ -22,7 +21,7 @@
     {
         public static void Start(IMvcApplication application)
         {
-            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+            CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
 
             var dependencyContainer = new ServiceCollection();
             application.ConfigureServices(dependencyContainer);
@@ -60,7 +59,13 @@
                         continue;
                     }
 
-                    routingTable.Add(httpAttribute.Method, httpAttribute.Path,
+                    var path = httpAttribute.Path;
+                    if (!path.StartsWith("/"))
+                    {
+                        path = "/" + path;
+                    }
+
+                    routingTable.Add(httpAttribute.Method, path,
                        (request) =>
                        ExecuteAction(controller, methodInfo, request, serviceCollection));
                 }
@@ -79,6 +84,7 @@
             }
 
             controllerInstance.Request = request;
+            controllerInstance.ViewEngine = new ViewEngine.ViewEngine();
             controllerInstance.UserCookieService = serviceCollection.CreateInstance<IUserCookieService>();
 
 
@@ -120,8 +126,9 @@
 
                     actionParameterObjects.Add(instance);
                 }
-                return actionParameterObjects;
             }
+
+            return actionParameterObjects;
         }
 
         private static string GetRequestData(IHttpRequest request, string key)

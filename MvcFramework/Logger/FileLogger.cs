@@ -12,16 +12,16 @@ namespace MvcFramework.Logger
 
         private readonly string fileName;
 
-        public FileLogger()
+        public FileLogger(string fileName)
         {
-            this.fileName = "log.txt";
+            this.fileName = fileName;
         }
 
         public void Log(string message)
         {
             lock (LockObject)
             {
-                File.AppendAllText(this.fileName, message + Environment.NewLine);
+                File.AppendAllText(this.fileName, $"[{DateTime.UtcNow}] {message}{Environment.NewLine}");
             }
         }
     }

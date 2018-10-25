@@ -17,9 +17,6 @@
             {
                 return this.Redirect("/");
             }
-
-            this.ViewBag["@allAlbums"] = "You don`t have albums yet.";
-
             var user = this.Context.Users.Include(u => u.Albums).FirstOrDefault(u => u.Username == this.User);
 
             if (user == null)
@@ -31,17 +28,7 @@
 
             var albumsInfo = string.Empty;
 
-            foreach (var album in albums)
-            {
-                albumsInfo += $"<a href=\"/albums/details?albumId={album.Id}\">{album.Name}</a></br>";
-            }
-
-            if (!string.IsNullOrWhiteSpace(albumsInfo))
-            {
-                this.ViewBag["@allAlbums"] = albumsInfo;
-            }
-
-            return this.View("Album"); ;
+            return this.View("All", user.Albums.ToArray());
         }
 
         [HttpGet("/albums/create")]
@@ -92,7 +79,7 @@
             }
             catch (Exception e)
             {
-               // return this.ServerError(e.Message);
+               return this.ServerError(e.Message);
             }
 
             return this.Redirect("/albums/all");
@@ -114,36 +101,7 @@
             {
                 return this.Redirect("/albums/all");
             }
-            
-            this.ViewBag["@anyTracks"] = "none";
-
-            var albumCover = album.Cover;
-            var albumName = album.Name;
-            var albumPriceAfterDiscount = album.Tracks.Sum(t => t.Price) * 0.87m;
-            this.ViewBag["@albumId"] = albumId;
-
-
-            this.ViewBag["@albumCover"] = albumCover;
-            this.ViewBag["@albumName"] = albumName;
-            this.ViewBag["@albumPrice"] = albumPriceAfterDiscount.ToString("F2");
-            
-            var tracks = album.Tracks.ToArray();
-            var tracksInfo = string.Empty;
-
-            if (tracks.Length > 0)
-            {
-                this.ViewBag["@anyTracks"] = "";
-                this.ViewBag["@noTracks"] = "none";
-
-                for (int i = 1; i <= tracks.Length; i++)
-                {
-                    var currentTrack = tracks[i - 1];
-                    tracksInfo += $"<li>{i}.<a href=\"/tracks/details?trackId={currentTrack.Id}&albumId={album.Id}\">{currentTrack.Name}</a></li>";
-                }
-                this.ViewBag["@allTracks"] = tracksInfo;
-            }
-
-            return this.View("Details");
+            return this.View("Details", album);
         }
     }
 }

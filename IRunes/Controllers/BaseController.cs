@@ -2,11 +2,12 @@
 {
     using IRunes.Data;
     using MvcFramework;
+    using MvcFramework.ViewEngine.Contracts;
 
     public abstract class BaseController : Controller
     {
 
-        public BaseController()
+        protected BaseController()
         {
             this.Context = new IRunesDbContext();
         }

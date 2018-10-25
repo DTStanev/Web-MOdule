@@ -23,11 +23,9 @@
         {
             if (this.User != null)
             {
-                this.ViewBag["@@username"] = this.User;
                 return this.Redirect("/");
             }
 
-            this.ViewBag["@showError"] = "none";
 
             return this.View("Login");
         }
@@ -43,30 +41,20 @@
             var user = this.Context.Users.FirstOrDefault(u =>
                 u.Username == username &&
                 u.Password == hashedPassword);
-
-            string errorMessage = string.Empty;
-
-            IHttpResponse response = null;
-
+            
             if (user == null)
             {
-                this.ViewBag["@showError"] = "";
-                this.ViewBag["@errorMessage"] = "Invalid username or password!";
-                return this.View("Login");
+                return this.BadRequestError("Login", "Invalid Username or Password");
             }
-
-            this.ViewBag["@@username"] = username;
 
             this.Request.Session.AddParameter("username", username);
 
             var cookieContent = this.UserCookieService.GetUserCookie(user.Username);
 
-            response = this.Redirect("/");
-
             var cookie = new HttpCookie(".auth-IRunes", cookieContent, 7) { HttpOnly = true };
-            response.Cookies.Add(cookie);
+            this.Response.Cookies.Add(cookie);
 
-            return response;
+            return this.Redirect("/");
         }
 
         [HttpGet("/users/logout")]
@@ -90,48 +78,39 @@
             if (this.User != null)
             {
                 return this.Redirect("/");
-            }
-
-            this.ViewBag["@showError"] = "none";
+            }      
 
             return this.View("Register");
         }
 
+        [HttpPost("/users/register")]
         public IHttpResponse DoRegister(DoRegisterInputViewModel model)
         {
             var username = model.Username.Trim();
             var password = model.Password;
             var confirmPassword = model.ConfirmPassword;
             var email = model.Email;
-
-
-
+            
             if (string.IsNullOrWhiteSpace(username) || username.Length < 4)
             {
-                this.ViewBag["@showError"] = "";
-                this.ViewBag["@errorMessage"] = "Please provide valid username with length of 4 or more characters.";
-                return this.View("Register");
+                return this.BadRequestError("Register", "Please provide valid username with length of 4 or more characters.");
             }
 
             if (this.Context.Users.Any(u => u.Username == username))
             {
-                this.ViewBag["@showError"] = "";
-                this.ViewBag["@errorMessage"] = "User with the same name already exists.";
-                return this.View("Register");
+                return this.BadRequestError("Register", "User with the same name already exists.");
             }
 
             if (string.IsNullOrWhiteSpace(password) || password.Length < 6)
             {
-                this.ViewBag["@showError"] = "";
-                this.ViewBag["@errorMessage"] = "Please provide password of length 6 or more characters.";
-                return this.View("Register");
+                return this.BadRequestError("Register", "Please provide password of length 6 or more characters.");
+
             }
 
             if (password != confirmPassword)
             {
-                this.ViewBag["@showError"] = "";
-                this.ViewBag["@errorMessage"] = "Passwords do not match.";
-                return this.View("Register");
+                return this.BadRequestError("Register", "Passwords do not match.");
+
             }
 
             var hashedPassword = this.hashService.Hash(password);
@@ -151,7 +130,7 @@
             }
             catch (Exception e)
             {
-               // return this.ServerError(e.Message);
+               return this.ServerError(e.Message);
             }
 
             return this.Redirect("/");
