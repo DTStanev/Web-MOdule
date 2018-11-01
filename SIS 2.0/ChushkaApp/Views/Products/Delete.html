@@ -1,0 +1,44 @@
+﻿<h1 class="text-center text-mishmash">Delete Product</h1>
+<hr class="bg-mishmash hr-2 bg-dark" />
+<div class="mx-auto w-50" method="post" action="/Channels/Create">
+    <div class="form-group">
+        <label for="name" class="text-mishmash">Name</label>
+        <input type="text" class="form-control" disabled id="name" value="@model.Name" placeholder="Name..." name="name">
+    </div>
+    <div class="form-group">
+        <label for="price" class="text-mishmash text-center">Tags</label>
+        <input type="number" min="0" step="0.1" class="form-control" disabled value="@model.Price" id="price" placeholder="Price..." name="price">
+    </div>
+    <div class="form-group">
+        <label for="description" class="text-mishmash">Description</label>
+        <textarea class="form-control" rows="4" id="description" disabled placeholder="Description..." name="description">@model.Description"</textarea>
+    </div>
+
+    <h2 class="text-center text-mishmash">Product Type</h2>
+    <hr class="bg-mishmash w-50 hr-2" />
+    <div class="row justify-content-between">
+
+        { var types = new[] { "Food", "Domestic", "Health", "Cosmetic", "Other" }; }
+        @foreach(var type in types)
+        {
+        <div class="col-md-2 ml-3">
+            <input id="type@type"
+                   disabled
+                   type="radio"
+                   @if(model.Type == type)
+                   {
+                   checked="checked"
+                   }
+                   name="type"
+                   value="@type" />
+            <label for="type@type">@type</label>
+        </div>
+        }
+    </div>
+
+    <hr class="bg-mishmash w-50 hr-2" />
+    <form method="post" action="/products/delete?id=@model.Id" class="button-holder mt-4 d-flex  justify-content-center">
+        <button type="submit" class=" mr-2 btn chushka-bg-color text-white">Delete</button>
+        <a href="javascript:history.back()" role="button" class=" ml-2 btn chushka-bg-color ml-4">Cancel</a>
+    </form>
+</div>

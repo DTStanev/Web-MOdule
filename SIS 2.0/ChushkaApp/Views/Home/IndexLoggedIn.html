@@ -1,0 +1,33 @@
+﻿<h1 class="text-center text-chushka">Greetings, @User.Username!</h1>
+
+@if(User.Role == "Admin")
+{
+<h3 class="text-center text-chushka">Enjoy your work today!</h3>
+}
+@else
+{
+<h3 class="text-center text-chushka">Feel free to view and order any of our products.</h3>
+}
+<hr class="hr-2 bg-dark" />
+
+<div>
+    <div class="tasks-row row justify-content-around">
+
+        @for(var i = 0; i < Model.Products.Count(); i++)
+        {
+        @if(i % 5 == 0 && i != 0)
+        {
+        <div class="w-100"></div>
+        }
+        {var currentProduct = Model.Products.ToList()[i];}
+        <div class="task col-md-2 mx-3 chushka-bg-color  rounded-top rounded-bottom py-3 mt-3" >
+            <h5 class="task-title text-white text-center my-3"><a class="text-white"href="/products/details?Id=@currentProduct.Id">@currentProduct.Name</a></h5>
+            <hr class="bg-white hr-2">
+            <p class=" task-title text-white text-center my-4 overflow">@currentProduct.ShortDescription</p>
+            <hr class="bg-white hr-2">
+            <h6 class="task-title text-white text-center my-4">$@currentProduct.Price</h6>
+        </div>
+        }
+    </div>
+</div>
+
