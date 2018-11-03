@@ -13,6 +13,16 @@ namespace ChushkaApp.Controllers
         {
             if (this.User.IsLoggedIn)
             {
+                var user = this.Db.Users.FirstOrDefault(x => x.Username == this.User.Username);
+
+                if (user == null)
+                {
+                    var cookie = this.Request.Cookies.GetCookie(".auth-cakes");
+                    cookie.Delete();
+                    this.Response.Cookies.Add(cookie);
+                    return this.Redirect("/");
+                }
+
                 var products = this.Db.Products
                     .Select(x => new ProductViewModel
                     {

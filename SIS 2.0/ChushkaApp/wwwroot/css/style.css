@@ -21,7 +21,7 @@ textarea {
 }
 
 .nav-link-dark {
-    color: #C0C0C0
+    color: black
 }
 
 .hr-2 {
@@ -35,6 +35,7 @@ textarea {
 .table-hover>tbody>tr:hover {
     background-color: #DC143C;
     color: #F8F8FF ;
+    table-striped;
 }
 
 footer {
@@ -42,4 +43,8 @@ footer {
     bottom: 0;
     border: 0;
     width: 98%;
+}
+
+.black-content{
+    color:black
 }

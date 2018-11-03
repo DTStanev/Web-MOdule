@@ -142,7 +142,8 @@ namespace SIS.MvcFramework.Routing
                             if (authorizeAttribute != null)
                             {
                                 var userData = Controller.GetUserData(request.Cookies, userCookieService);
-                                if (userData == null || !userData.IsLoggedIn
+                                if (userData == null 
+                                    || !userData.IsLoggedIn
                                     || (authorizeAttribute.RoleName != null
                                         && authorizeAttribute.RoleName != userData.Role))
                                 {

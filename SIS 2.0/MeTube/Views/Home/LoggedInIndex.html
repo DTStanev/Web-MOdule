@@ -1,0 +1,37 @@
+﻿<h4 class="home-title-color text-center">Welcome, @User.Username</h4>
+<hr class="my-3" />
+<div>
+    <div class=" tasks-row row justify-content-center">
+        {var tubesCount = model.Tubes.Count();}
+        @for(var i = 0; i < tubesCount; i++)
+        {
+        {var currentTube = model.Tubes.ToList()[i];}
+        @if(i % 3 == 0 && i != 0)
+        {
+        <div class="w-100"></div>
+        }
+       
+        <div class="col-md-2  mt-3 text-center">
+            <a class="black-content"href="/tubes/details?Id=@currentTube.Id">
+                <img src="http://img.youtube.com/vi/@currentTube.YoutubeId/0.jpg" width="150" height="100" alt="tube img" />
+                <div>@currentTube.Title</div>
+                <div>@currentTube.Author</div>
+            </a>
+        </div>
+       
+
+
+        @if(i == tubesCount - 1 && tubesCount % 3 != 0)
+        {
+        {var filledCols = tubesCount % 3;}
+
+        {var neededCols = 3 - filledCols;}
+
+        @for(var j = 0; j < neededCols; j++)
+        {
+        <div class="col-md-2"></div>
+        }
+        }
+        }
+    </div>
+</div>
